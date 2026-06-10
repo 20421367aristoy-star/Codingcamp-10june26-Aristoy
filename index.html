@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BudgetViz — Expense Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigation">
+    <div class="sidebar__brand">
+      <div class="sidebar__logo">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor" opacity=".2"/>
+          <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="sidebar__name">BudgetViz</span>
+    </div>
+
+    <nav class="sidebar__nav" aria-label="Main navigation">
+      <a class="sidebar__link sidebar__link--active" href="#" aria-current="page">
+        <svg class="sidebar__link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" fill="currentColor"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" fill="currentColor" opacity=".5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity=".5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5" fill="currentColor" opacity=".5"/>
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      <a class="sidebar__link" href="#">
+        <svg class="sidebar__link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M3 10h18M7 3v4M17 3v4M4 21h16a1 1 0 001-1V7a1 1 0 00-1-1H4a1 1 0 00-1 1v13a1 1 0 001 1z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>Transactions</span>
+      </a>
+      <a class="sidebar__link" href="#">
+        <svg class="sidebar__link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 20V10M18 20V4M6 20v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>Analytics</span>
+      </a>
+      <a class="sidebar__link" href="#">
+        <svg class="sidebar__link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar__footer">
+      <button class="sidebar__theme-btn" id="themeToggle" aria-label="Toggle dark/light mode">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===================== MOBILE TOPBAR ===================== -->
+  <header class="topbar" aria-label="Mobile header">
+    <button class="topbar__menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span class="topbar__menu-line"></span>
+      <span class="topbar__menu-line"></span>
+      <span class="topbar__menu-line"></span>
+    </button>
+    <div class="topbar__brand">
+      <span class="topbar__logo">💰</span>
+      <span class="topbar__name">BudgetViz</span>
+    </div>
+    <button class="topbar__theme-btn" id="themeToggleMobile" aria-label="Toggle theme">
+      <span id="themeIconMobile">🌙</span>
+    </button>
+  </header>
+
+  <!-- Sidebar backdrop for mobile -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
+
+  <!-- ===================== PAGE WRAPPER ===================== -->
+  <div class="page-wrapper">
+    <main class="main" id="main">
+
+      <!-- HERO HEADER PANEL -->
+      <div class="hero">
+        <div class="hero__content">
+          <p class="hero__greeting">Good day 👋</p>
+          <h1 class="hero__title">My Expenses</h1>
+          <p class="hero__subtitle">Track, visualize, and stay on budget.</p>
+        </div>
+        <div class="hero__stats">
+          <!-- Total Spending -->
+          <div class="hero__stat hero__stat--main">
+            <p class="hero__stat-label">Total Spending</p>
+            <p class="hero__stat-value" id="totalSpending">Rp 0</p>
+            <div class="hero__stat-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+              This month
+            </div>
+          </div>
+          <!-- Transaction Count -->
+          <div class="hero__stat">
+            <p class="hero__stat-label">Transactions</p>
+            <p class="hero__stat-value hero__stat-value--sm" id="totalTransactions">0</p>
+            <div class="hero__stat-badge">All time</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT GRID -->
+      <div class="content-grid">
+
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+
+          <!-- ADD TRANSACTION CARD -->
+          <div class="panel" aria-label="Add Transaction">
+            <div class="panel__header">
+              <h2 class="panel__title">Add Expense</h2>
+              <span class="panel__pill">+ New</span>
+            </div>
+
+            <form class="form" id="transactionForm" novalidate>
+              <div class="form__group">
+                <label class="form__label" for="itemName">Item Name</label>
+                <div class="form__input-wrap">
+                  <svg class="form__input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M11 4H4a1 1 0 00-1 1v14a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <input class="form__input" type="text" id="itemName" placeholder="e.g. Lunch at Warung" autocomplete="off" />
+                </div>
+                <span class="form__error" id="nameError"></span>
+              </div>
+
+              <div class="form__group">
+                <label class="form__label" for="amount">Amount</label>
+                <div class="form__input-wrap">
+                  <span class="form__currency-badge">Rp</span>
+                  <input class="form__input form__input--amount" type="number" id="amount" placeholder="0" min="1" />
+                </div>
+                <span class="form__error" id="amountError"></span>
+              </div>
+
+              <div class="form__group">
+                <label class="form__label" for="category">Category</label>
+                <div class="form__input-wrap">
+                  <svg class="form__input-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M7 7h.01M3 4a1 1 0 011-1h4.586a1 1 0 01.707.293l9.414 9.414a2 2 0 010 2.828l-4.586 4.586a2 2 0 01-2.828 0L2.879 10.707A1 1 0 012.586 10V5a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                  <select class="form__input form__select" id="category">
+                    <!-- populated by JS -->
+                  </select>
+                </div>
+                <span class="form__error" id="categoryError"></span>
+              </div>
+
+              <button class="btn btn--submit" type="submit">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                Add Transaction
+              </button>
+            </form>
+
+            <!-- Custom Category Manager -->
+            <div class="cat-manager">
+              <button class="cat-manager__toggle" id="toggleCustomCategory" aria-expanded="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                Manage Categories
+                <svg class="cat-manager__arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </button>
+
+              <div class="cat-manager__panel" id="customCategoryPanel" hidden>
+                <div class="cat-manager__input-row">
+                  <input class="form__input" type="text" id="newCategoryInput" placeholder="Category name..." autocomplete="off" />
+                  <button class="btn btn--add-cat" id="addCategoryBtn" type="button">Add</button>
+                </div>
+                <span class="form__error" id="categoryAddError"></span>
+                <div class="cat-manager__chips" id="customCategoryList"></div>
+              </div>
+            </div>
+          </div><!-- /panel -->
+
+          <!-- CHART CARD -->
+          <div class="panel chart-panel" aria-label="Spending Chart">
+            <div class="panel__header">
+              <h2 class="panel__title">Breakdown</h2>
+              <span class="panel__pill panel__pill--muted">By category</span>
+            </div>
+            <div class="chart-wrapper" id="chartWrapper">
+              <canvas id="expenseChart" aria-label="Expense distribution pie chart"></canvas>
+            </div>
+            <div class="chart-empty" id="chartEmpty" hidden>
+              <div class="chart-empty__illustration">
+                <svg viewBox="0 0 120 100" fill="none" aria-hidden="true">
+                  <circle cx="60" cy="50" r="40" stroke="currentColor" stroke-width="2" stroke-dasharray="6 4" opacity=".2"/>
+                  <circle cx="60" cy="50" r="25" fill="currentColor" opacity=".06"/>
+                  <path d="M45 50 Q60 30 75 50 Q60 70 45 50Z" fill="currentColor" opacity=".15"/>
+                </svg>
+              </div>
+              <p class="chart-empty__title">No data yet</p>
+              <p class="chart-empty__text">Add transactions to see your spending breakdown.</p>
+            </div>
+          </div>
+
+        </div><!-- /left-panel -->
+
+        <!-- RIGHT PANEL: TRANSACTIONS -->
+        <div class="right-panel">
+          <div class="panel transactions-panel" aria-label="Transaction History">
+            <div class="panel__header">
+              <h2 class="panel__title">History</h2>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+              <div class="controls__search-wrap">
+                <svg class="controls__search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/>
+                  <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <input class="controls__search-input" type="text" id="searchInput" placeholder="Search transactions…" autocomplete="off" />
+              </div>
+              <div class="controls__sort-wrap">
+                <svg class="controls__sort-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+                <select class="controls__sort-select" id="sortSelect">
+                  <option value="date-desc">Newest</option>
+                  <option value="date-asc">Oldest</option>
+                  <option value="amount-asc">Amount ↑</option>
+                  <option value="amount-desc">Amount ↓</option>
+                  <option value="category-az">Category A–Z</option>
+                  <option value="category-za">Category Z–A</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Transaction list -->
+            <div class="tx-list" id="transactionList"></div>
+
+            <!-- Empty state -->
+            <div class="empty-state" id="emptyState" hidden>
+              <div class="empty-state__visual">
+                <svg viewBox="0 0 160 140" fill="none" aria-hidden="true">
+                  <!-- receipt shape -->
+                  <rect x="40" y="20" width="80" height="100" rx="8" fill="currentColor" opacity=".07"/>
+                  <rect x="40" y="20" width="80" height="100" rx="8" stroke="currentColor" stroke-width="2" stroke-dasharray="5 3" opacity=".2"/>
+                  <!-- lines -->
+                  <rect x="56" y="42" width="48" height="5" rx="2.5" fill="currentColor" opacity=".15"/>
+                  <rect x="56" y="56" width="36" height="5" rx="2.5" fill="currentColor" opacity=".12"/>
+                  <rect x="56" y="70" width="44" height="5" rx="2.5" fill="currentColor" opacity=".1"/>
+                  <rect x="56" y="84" width="28" height="5" rx="2.5" fill="currentColor" opacity=".08"/>
+                  <!-- plus bubble -->
+                  <circle cx="120" cy="30" r="16" fill="currentColor" opacity=".12"/>
+                  <path d="M120 23v14M113 30h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".4"/>
+                </svg>
+              </div>
+              <p class="empty-state__title">No transactions yet</p>
+              <p class="empty-state__desc">Start tracking your expenses by adding your first transaction.</p>
+            </div>
+
+          </div><!-- /panel -->
+        </div><!-- /right-panel -->
+
+      </div><!-- /content-grid -->
+
+    </main>
+
+    <footer class="footer">
+      <p>© 2026 BudgetViz. Built with ♥ for smart spending.</p>
+    </footer>
+  </div><!-- /page-wrapper -->
+
+  <!-- Toast container (injected by JS) -->
+
+  <script src="script.js"></script>
+</body>
+</html>
